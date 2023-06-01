@@ -1,17 +1,15 @@
-import graphUtils as graph
-import matplotlib.pyplot as plt
-import csvUtils as CSV
+import HMM.viterbi as viterbi
 
+obs = ("normal", "cold", "dizzy")
+states = ("Healthy", "Fever") # hidden states
+start_p = {"Healthy": 0.6, "Fever": 0.4}
+trans_p = {
+    "Healthy": {"Healthy": 0.7, "Fever": 0.3},
+    "Fever": {"Healthy": 0.4, "Fever": 0.6},
+}
+emit_p = {
+    "Healthy": {"normal": 0.5, "cold": 0.4, "dizzy": 0.1},
+    "Fever": {"normal": 0.1, "cold": 0.3, "dizzy": 0.6},
+}
 
-if __name__ == "__main__":
-
-    normalised_timestamp_acc, x_accel, y_accel, z_accel = CSV.reading_into_csv("data/RGB/Subject001/03/09.csv", 1, 2, 3)
-    normalised_timestamp_gyr, x_gyr, y_gyr, z_gyr = CSV.reading_into_csv("data/RGB/Subject001/03/09.csv", 4, 5, 6)
-
-
-    plt.figure(1)
-    graph.show_3_subplot(normalised_timestamp_acc, x_accel, y_accel, z_accel, 'Acceleration data', 'acceleration', 'times(s)')
-    plt.figure(2)
-    graph.show_3_subplot(normalised_timestamp_gyr, x_gyr, y_gyr, z_gyr, 'Gyroscope data', 'gyroscope', 'times(s)')
-
-    plt.show()
+viterbi.viterbi(obs, states, start_p, trans_p, emit_p)
