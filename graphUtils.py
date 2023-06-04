@@ -20,11 +20,12 @@ def show_3_subplot(x, y1, y2, y3, title, ylabel, xlabel):
     plt.show()
 
 def plots_3_data(x, y1, y2, y3, title, ylabel, xlabel):
-    plt.figure()
-    plt.plot(x, y1, x, y2, x, y3)
 
+    plt.plot(x, y1, x, y2, x, y3)
+    
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
-
+    plt.savefig(f"./images_saved/{title}.png")
     plt.show()
+    

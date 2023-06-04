@@ -12,5 +12,3 @@ if __name__ == "__main__":
 
     graph.plots_3_data(normalised_timestamp_acc, x_accel, y_accel, z_accel, 'Acceleration data', 'acceleration', 'times(s)')
     graph.plots_3_data(normalised_timestamp_acc, x_gyros, y_gyros, z_gyros, 'Gyroscope data', 'gyroscope', 'times(s)')
-
-    plt.show()
