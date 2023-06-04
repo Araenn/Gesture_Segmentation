@@ -1,15 +1,7 @@
-import HMM.viterbi as viterbi
+import simple_method
+import readingsUtils.csv_reading.csvUtils as CSV
+import graphUtils as graph
 
-obs = ("normal", "cold", "dizzy")
-states = ("Healthy", "Fever") # hidden states
-start_p = {"Healthy": 0.6, "Fever": 0.4}
-trans_p = {
-    "Healthy": {"Healthy": 0.7, "Fever": 0.3},
-    "Fever": {"Healthy": 0.4, "Fever": 0.6},
-}
-emit_p = {
-    "Healthy": {"normal": 0.5, "cold": 0.4, "dizzy": 0.1},
-    "Fever": {"normal": 0.1, "cold": 0.3, "dizzy": 0.6},
-}
+normalised_timestamp_acc, x_accel, y_accel, z_accel = CSV.reading_into_csv("data/RGB/Subject001/03/09.csv", 1, 2, 3)
 
-viterbi.viterbi(obs, states, start_p, trans_p, emit_p)
+graph.plots_3_data(normalised_timestamp_acc, x_accel, y_accel, z_accel, "Accelerometer data", "time", "value")
