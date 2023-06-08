@@ -5,12 +5,13 @@ from scipy.ndimage import gaussian_filter1d
 import mathsUtils as MATH
 from math import sqrt, pow
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from scipy.fft import fftfreq, fft
 import numpy as np
 import time as time
 
 normalised_timestamp_acc, x_accel, y_accel, z_accel, x_gyros, y_gyros, z_gyros = TXT.reading_into_txt(
-        "data/unsegmented/S1/Recorder_2019_04_03_16_35/data.txt")
+        "data/unsegmented/S1/Recorder_2019_04_03_16_23/data.txt")
 freq = 100
 """
 GRAPH.plots_3_data(normalised_timestamp_acc, x_accel, y_accel, z_accel, "Acceleration", "Value", "Time (sec)")
@@ -126,5 +127,13 @@ plt.legend()
 plt.show()
 
 # Print the segment start and end indices
+fig, ax = plt.subplots()
 for start, end in zip(segment_start_indices, segment_end_indices):
     print("Segment: Start={}, End={}".format(start, end))
+    norm_gaussian_part = norm_gaussian[start:end]
+    min_y = min(norm_gaussian_part)
+    max_y = max(norm_gaussian_part)
+    ax.add_patch(Rectangle((start, min_y), end-start, max_y - min_y, fill=False))
+        
+plt.plot(norm_gaussian)
+plt.show()
