@@ -11,27 +11,9 @@ import numpy as np
 import time as time
 
 normalised_timestamp_acc, x_accel, y_accel, z_accel, x_gyros, y_gyros, z_gyros = TXT.reading_into_txt(
-        "data/unsegmented/S1/Recorder_2019_04_03_16_23/data.txt")
+        "data/unsegmented/S1/Recorder_2019_04_03_16_10/data.txt")
 freq = 100
-"""
-GRAPH.plots_3_data(normalised_timestamp_acc, x_accel, y_accel, z_accel, "Acceleration", "Value", "Time (sec)")
 
-x_derivative, y_derivative, z_derivative = MATH.derivative(normalised_timestamp_acc, x_accel, y_accel, z_accel)
-GRAPH.plots_3_data(normalised_timestamp_acc, x_derivative, y_derivative, z_derivative, "Derivative", "Value", "Time (sec)")
-
-order = 20
-polyn = 2
-savgo_filtered = [savgol_filter(x_derivative, order, polyn), savgol_filter(y_derivative, order, polyn), savgol_filter(z_derivative, order, polyn)]
-
-GRAPH.plots_3_data(normalised_timestamp_acc, savgo_filtered[0], savgo_filtered[1], savgo_filtered[2], "Savgol", "Value", "Times (sec)")
-
-sigma = 20
-gaussian_filtered = [gaussian_filter1d(x_derivative, sigma), gaussian_filter1d(y_derivative, sigma), gaussian_filter1d(z_derivative, sigma)]
-
-GRAPH.plots_3_data(normalised_timestamp_acc, gaussian_filtered[0], gaussian_filtered[1], gaussian_filtered[2], "Gaussian", "Value", "Times (sec)")
-
-
-"""
 # norme accel * 0.3 + norme gyros * 0.7 puis normaliser
 smoothing_factor = 12
 sub_sampling_factor = freq // 30  # 125Hz to 30Hz
@@ -50,28 +32,32 @@ subsampled_z_accel = smoothed_z_accel[::sub_sampling_factor]
 
 num_samples = (len(x_accel) // smoothing_factor) * smoothing_factor
 
-# Smooth the data by taking the mean of every smoothing_factor frames
+"""
+# Same for the gyros
 smoothed_x_gyros = np.mean(np.array(x_gyros[:num_samples]).reshape(-1, smoothing_factor), axis=1)
 smoothed_y_gyros = np.mean(np.array(y_gyros[:num_samples]).reshape(-1, smoothing_factor), axis=1)
 smoothed_z_gyros = np.mean(np.array(z_gyros[:num_samples]).reshape(-1, smoothing_factor), axis=1)
 
-# Sub-sample the smoothed data
 subsampled_x_gyros = smoothed_x_gyros[::sub_sampling_factor]
 subsampled_y_gyros = smoothed_y_gyros[::sub_sampling_factor]
 subsampled_z_gyros = smoothed_z_gyros[::sub_sampling_factor]
+"""
 
 
 # Calculate the corresponding timestamp for the subsampled data
 original_timestamp = np.linspace(0, num_samples / freq, num_samples)
 subsampled_timestamp = original_timestamp[::smoothing_factor][::sub_sampling_factor]
 
+# Normalise the acceleration data
 norm = []
 for i in range(0, len(subsampled_x_accel)):
         norm.append(sqrt(pow(subsampled_x_accel[i], 2) + pow(subsampled_y_accel[i], 2) + pow(subsampled_z_accel[i], 2)))
 
 plt.figure()
 plt.plot(subsampled_timestamp, norm)
+plt.title("Normalised acceleration data [sqrt(x+y+z)]")
 
+# Derivate the normalised data
 norm_derivative = MATH.derivative(subsampled_timestamp, norm)
 fft_deri = fft(norm_derivative)
 
@@ -83,8 +69,11 @@ plt.subplot(2,1,1)
 plt.plot(subsampled_timestamp, norm_derivative)
 plt.subplot(2,1,2)
 plt.plot(fftfreq(len(fft_deri)), fft_deri.real)
+plt.title("FFT of the derivative")
+plt.suptitle("Derivative of the acceleration")
 
-sigma = 2
+# Filtering with Gaussian filter the derivated data
+sigma = 1
 norm_gaussian = gaussian_filter1d(norm_derivative, sigma)
 fft_gauss = fft(norm_gaussian)
 
@@ -93,15 +82,15 @@ plt.subplot(2,1,1)
 plt.plot(subsampled_timestamp, norm_gaussian)
 plt.subplot(2,1,2)
 plt.plot(fftfreq(len(fft_gauss)), fft_gauss.real)
+plt.suptitle("Gaussian filtered derivative")
 
 plt.show()
 
 # Define the parameters for adaptive envelopping
-window_size = 20  # Size of the moving window for computing mean and standard deviation
+window_size = 35  # Size of the moving window for computing mean and standard deviation
 envelopp_multiplier = 3  # Multiplier for the standard deviation to determine the envelopp
-threshold_multiplier = 0.4
+threshold_multiplier = 0.5
 
-# Compute the absolute value of the filtered signal
 abs_signal = np.abs(norm_gaussian)
 
 # Compute the adaptive envelopp using moving average and standard deviation
@@ -117,23 +106,29 @@ is_movement = envelopp > threshold
 segment_start_indices = np.where(np.diff(is_movement.astype(int)) == 1)[0] + 1
 segment_end_indices = np.where(np.diff(is_movement.astype(int)) == -1)[0] + 1
 
-# Plot the filtered signal with adaptive envelopp
 plt.figure()
 plt.plot(abs_signal, label='Filtered Signal')
 plt.plot(envelopp, label='Adaptive envelopp')
 plt.xlabel('Time')
 plt.ylabel('Signal')
 plt.legend()
+plt.title("Adaptative envelop for the [abs(signal filtered)]")
 plt.show()
 
-# Print the segment start and end indices
+# Print the segment start and end indices, and plot them (with rectangles)
 fig, ax = plt.subplots()
 for start, end in zip(segment_start_indices, segment_end_indices):
+    if start > end:
+          temp = start
+          start = end
+          end = temp
     print("Segment: Start={}, End={}".format(start, end))
     norm_gaussian_part = norm_gaussian[start:end]
     min_y = min(norm_gaussian_part)
     max_y = max(norm_gaussian_part)
     ax.add_patch(Rectangle((start, min_y), end-start, max_y - min_y, fill=False))
         
-plt.plot(norm_gaussian)
+plt.plot(norm_gaussian, label="filtered signal")
+plt.legend()
+plt.title("Segmentation check")
 plt.show()
