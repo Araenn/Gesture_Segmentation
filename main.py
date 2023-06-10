@@ -62,7 +62,7 @@ for i in range(0, len(downsampled_x_accel)):
 
 norm_derivative, norm_gaussian, abs_norm, envelopp_norm, start_norm, end_norm = MATH.simple_segmentation(
         downsampled_timestamp, norm, sigma, window_size, envelopp_multiplier, threshold_multiplier)
-GRAPH.plot_simple_segmentation(downsampled_timestamp, norm, norm_derivative, norm_gaussian, abs_norm, envelopp_norm, start_norm, end_norm)
+#GRAPH.plot_simple_segmentation(downsampled_timestamp, norm, norm_derivative, norm_gaussian, abs_norm, envelopp_norm, start_norm, end_norm)
 xaccel_derivative, xaccel_gaussian, abs_xaccel, envelopp_xaccel, start_xaccel, end_xaccel = MATH.simple_segmentation(
         downsampled_timestamp, downsampled_x_accel, sigma, window_size, envelopp_multiplier, threshold_multiplier)
 yaccel_derivative, yaccel_gaussian, abs_yaccel, envelopp_yaccel, start_yaccel, end_yaccel = MATH.simple_segmentation(
@@ -72,35 +72,31 @@ zaccel_derivative, zaccel_gaussian, abs_zaccel, envelopp_zaccel, start_zaccel, e
 
 GRAPH.plots_data(downsampled_timestamp, 
                    "Derivative",
+                   False,
                    (xaccel_derivative, "xaccel_derivative"), 
                    (yaccel_derivative, "yaccel_derivative"), 
                    (zaccel_derivative, "zaccel_derivative"), 
                    (norm_derivative, "norm_derivative"))
 
-GRAPH.plots_data(downsampled_timestamp, 
+GRAPH.plots_data(downsampled_timestamp,
                  "Gaussian filtered",
+                 False,
                  (xaccel_gaussian, "x_accel"),
                  (yaccel_gaussian, "y_accel"),
                  (zaccel_gaussian, "z_accel"),
                  (norm_gaussian, "norm"))
 
-plt.figure()
 plt.subplot(4,1,1)
-plt.plot(abs_xaccel, label="x_accel")
-plt.plot(envelopp_xaccel, label="envelopp")
-plt.legend()
+GRAPH.plots_data(downsampled_timestamp, "X accel", True, (abs_xaccel, "abs_accel"), (envelopp_xaccel, "envelopp"))
 plt.subplot(4,1,2)
-plt.plot(abs_yaccel, label="y_accel")
-plt.plot(envelopp_yaccel, label="envelopp")
-plt.legend()
+GRAPH.plots_data(downsampled_timestamp, "Y accel", True, (abs_yaccel, "abs_accel"), (envelopp_yaccel, "envelopp"))
 plt.subplot(4,1,3)
-plt.plot(abs_zaccel, label="z_accel")
-plt.plot(envelopp_zaccel, label="envelopp")
-plt.legend()
+GRAPH.plots_data(downsampled_timestamp, "Z accel", True, (abs_zaccel, "abs_accel"), (envelopp_zaccel, "envelopp"))
 plt.subplot(4,1,4)
-plt.plot(abs_norm, label="norm_accel")
-plt.plot(envelopp_norm, label="envelopp")
-plt.suptitle("Adaptative envelopp")
-plt.legend()
-plt.show()
+GRAPH.plots_data(downsampled_timestamp, "Norm accel", False, (abs_norm, "abs_accel"), (envelopp_norm, "envelopp"))
 
+
+GRAPH.plots_rectangles(xaccel_gaussian, start_xaccel, end_xaccel, True)
+GRAPH.plots_rectangles(yaccel_gaussian, start_yaccel, end_yaccel, True)
+GRAPH.plots_rectangles(zaccel_gaussian, start_zaccel, end_zaccel, True)
+GRAPH.plots_rectangles(norm_gaussian, start_norm, end_norm, False)

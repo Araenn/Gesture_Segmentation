@@ -25,47 +25,41 @@ def show_3_subplot(x, y1, y2, y3, title, ylabel, xlabel):
 def plot_simple_segmentation(downsampled_timestamp, signal, signal_derivative, norm_gaussian, abs_signal, envelopp, segment_start, segment_end):
     
     plt.figure()
-    plt.plot(downsampled_timestamp, signal)
-    plt.title("Normalised acceleration data [sqrt(x+y+z)]")
-    plt.savefig(f"./images_saved/Normalised_acc.png")
+    plots_data(downsampled_timestamp, 
+               "Normalised acceleration data [sqrt(x+y+z)]",
+               False,
+               "Normalised_acceleration_data",
+               (signal, "signal"))
+
+    plt.figure()    
+    plots_data(downsampled_timestamp, 
+               "Derivative of the acceleration",
+               False,
+               "Derivative",
+               (signal_derivative, "derivative"))
 
     plt.figure()
-    plt.plot(downsampled_timestamp, signal_derivative)
-    plt.title("Derivative of the acceleration")
-    plt.savefig(f"./images_saved/Derivative.png")
+    plots_data(downsampled_timestamp,
+               "Gaussian filtered derivative",
+               False,
+               "Gaussian",
+               (norm_gaussian, "gaussian"))
 
     plt.figure()
-    plt.plot(downsampled_timestamp, norm_gaussian)
-    plt.title("Gaussian filtered derivative")
-    plt.savefig(f"./images_saved/Gaussian_filtered.png")
-    plt.show()
+    plots_data(downsampled_timestamp, 
+               "Adaptative envelopp for the [abs(signal filtered)]",
+               False,
+               "Adaptative",
+               (abs_signal, "abs"), (envelopp, "envelopp") )
 
-    plt.figure()
-    plt.plot(abs_signal, label='Filtered Signal')
-    plt.plot(envelopp, label='Adaptive envelopp')
-    plt.xlabel('Time')
-    plt.ylabel('Signal')
-    plt.legend()
-    plt.title("Adaptative envelopp for the [abs(signal filtered)]")
-    plt.savefig(f"./images_saved/Adaptative_envelopp.png")
-    plt.show()
+    plots_rectangles(y_signal=norm_gaussian,
+                     segment_start_indices=segment_start,
+                     segment_end_indices=segment_end,
+                     need_buffer=True)
 
-    # Print the segment start and end indices, and plot them (with rectangles)
-    fig, ax = plt.subplots()
-    for i in range(0, len(segment_start)):
-        start = segment_start[i]
-        end = segment_end[i]
-        norm_gaussian_part = norm_gaussian[start:end]
-        min_y = min(norm_gaussian_part)
-        max_y = max(norm_gaussian_part)
-        ax.add_patch(Rectangle((start, min_y), end-start, max_y - min_y, fill=False))
-    plt.plot(norm_gaussian, label="filtered signal")
-    plt.legend()
-    plt.title("Segmentation check")
-    plt.savefig(f"./images_saved/Segmentation_check.png")
-    plt.show()
-
-def plots_data(x:List[float], title:str, *functions:List[Tuple[List[float],str]]):
+def plots_data(x:List[float], title:str, need_buffered:bool, *functions:List[Tuple[List[float],str]], file_name:str=None):
+    if file_name is None:
+        file_name = title
 
     plt.xlabel("Times (s)")
     plt.ylabel("Value")
@@ -81,5 +75,27 @@ def plots_data(x:List[float], title:str, *functions:List[Tuple[List[float],str]]
     legend = tuple(legend)
 
     plt.legend(legend)
-    plt.savefig(f"./images_saved/{title}.png")
-    plt.show()
+    
+    if not need_buffered:
+        plt.savefig(f"./images_saved/{file_name}.png")
+        plt.show()
+
+def plots_rectangles(y_signal:List[float], segment_start_indices:List[float], segment_end_indices:List[float], need_buffer:bool):
+    _, ax = plt.subplots()
+    for start, end in zip(segment_start_indices, segment_end_indices):
+        # for exception, allow to throw errors
+        if start > end:
+            temp = start
+            start = end
+            end = temp
+        print("Segment : Start = {} seconds, End = {} seconds".format(start, end))
+        norm_gaussian_part = y_signal[start:end]
+        min_y = min(norm_gaussian_part)
+        max_y = max(norm_gaussian_part)
+        ax.add_patch(Rectangle((start, min_y), end-start, max_y - min_y, fill=False))
+    plt.plot(y_signal, label="filtered signal")
+    plt.legend()
+    plt.title("Segmentation check")
+    if not need_buffer:
+        plt.savefig(f"./images_saved/Segmentation_check.png")
+        plt.show()
