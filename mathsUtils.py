@@ -75,3 +75,18 @@ def simple_segmentation(downsampled_timestamp, signal, sigma, window_size, envel
         start_output.append(start)
         end_output.append(end)
     return signal_derivative, norm_gaussian, abs_signal, envelopp, start_output, end_output
+
+def smooth_signal(x_accel, y_accel, z_accel, smoothing_factor, down_sampling_factor):
+    num_samples = (len(x_accel) // smoothing_factor) * smoothing_factor
+
+    # Smooth the data by taking the mean of every smoothing_factor frames
+    smoothed_x_accel = np.mean(np.array(x_accel[:num_samples]).reshape(-1, smoothing_factor), axis=1)
+    smoothed_y_accel = np.mean(np.array(y_accel[:num_samples]).reshape(-1, smoothing_factor), axis=1)
+    smoothed_z_accel = np.mean(np.array(z_accel[:num_samples]).reshape(-1, smoothing_factor), axis=1)
+
+    # Down-sample the smoothed data
+    downsampled_x_accel = smoothed_x_accel[::down_sampling_factor]
+    downsampled_y_accel = smoothed_y_accel[::down_sampling_factor]
+    downsampled_z_accel = smoothed_z_accel[::down_sampling_factor]
+
+    return downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, num_samples

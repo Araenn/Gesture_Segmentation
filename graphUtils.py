@@ -27,14 +27,14 @@ def plot_simple_segmentation(downsampled_timestamp, signal, signal_derivative, n
     
     plt.figure()
     plots_data(downsampled_timestamp, 
-               "Normalised acceleration data [sqrt(x+y+z)]",
+               "Normalised data [sqrt(x+y+z)]",
                False,
-               "Normalised_acceleration_data",
+               "Normalised_data",
                (signal, "signal"))
 
     plt.figure()    
     plots_data(downsampled_timestamp, 
-               "Derivative of the acceleration",
+               "Derivative",
                False,
                "Derivative",
                (signal_derivative, "derivative"))
