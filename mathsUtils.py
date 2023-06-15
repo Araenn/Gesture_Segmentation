@@ -71,7 +71,7 @@ def simple_segmentation(downsampled_timestamp, signal, sigma, window_size, envel
             temp = start
             start = end
             end = temp
-        print("Segment : Start = {} seconds, End = {} seconds".format(start, end))
+        #print("Segment : Start = {} seconds, End = {} seconds".format(start, end))
         start_output.append(start)
         end_output.append(end)
     return signal_derivative, norm_gaussian, abs_signal, envelopp, start_output, end_output

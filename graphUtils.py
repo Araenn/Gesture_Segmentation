@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+import numpy as np
 
 def show_3_subplot(x, y1, y2, y3, title, ylabel, xlabel):
     plt.subplot(3, 1, 1)
@@ -80,22 +81,34 @@ def plots_data(x:List[float], title:str, need_buffered:bool, *functions:List[Tup
         plt.savefig(f"./images_saved/{file_name}.png")
         plt.show()
 
-def plots_rectangles(y_signal:List[float], segment_start_indices:List[float], segment_end_indices:List[float], need_buffer:bool):
+def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indices: List[List[float]], segment_end_indices: List[List[float]], need_buffer: bool):
     _, ax = plt.subplots()
-    for start, end in zip(segment_start_indices, segment_end_indices):
-        # for exception, allow to throw errors
-        if start > end:
-            temp = start
-            start = end
-            end = temp
-        print("Segment : Start = {} seconds, End = {} seconds".format(start, end))
-        norm_gaussian_part = y_signal[start:end]
-        min_y = min(norm_gaussian_part)
-        max_y = max(norm_gaussian_part)
-        ax.add_patch(Rectangle((start, min_y), end-start, max_y - min_y, fill=False))
-    plt.plot(y_signal, label="filtered signal")
+    patches = []
+    lines = []
+
+    for i, (y_signal, start_indices, end_indices) in enumerate(zip(y_signals, segment_start_indices, segment_end_indices)):
+        line, = plt.plot(y_signal[0], label=y_signal[1])
+        lines.append(line)
+        for start, end in zip(start_indices, end_indices):
+            if start > end:
+                start, end = end, start
+            norm_gaussian_part = y_signal[0][int(start):int(end)]
+            min_y = min(norm_gaussian_part)
+            max_y = max(norm_gaussian_part)
+            rect = Rectangle((start, min_y), end - start, max_y - min_y, fill=False, edgecolor=line.get_color(), linewidth=3)
+            ax.add_patch(rect)
+            patches.append(rect)
+        
+        
     plt.legend()
     plt.title("Segmentation check")
+
     if not need_buffer:
-        plt.savefig(f"./images_saved/Segmentation_check.png")
+        plt.savefig("./images_saved/Segmentation_check.png")
         plt.show()
+
+
+
+
+
+

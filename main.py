@@ -96,7 +96,7 @@ plt.subplot(4,1,4)
 GRAPH.plots_data(downsampled_timestamp, "Norm accel", False, (abs_norm, "abs_accel"), (envelopp_norm, "envelopp"))
 
 
-GRAPH.plots_rectangles(xaccel_gaussian, start_xaccel, end_xaccel, True)
-GRAPH.plots_rectangles(yaccel_gaussian, start_yaccel, end_yaccel, True)
-GRAPH.plots_rectangles(zaccel_gaussian, start_zaccel, end_zaccel, True)
-GRAPH.plots_rectangles(norm_gaussian, start_norm, end_norm, False)
+GRAPH.plots_rectangles([ (xaccel_gaussian, "x_accel"), (yaccel_gaussian, "y_accel"), (zaccel_gaussian, "z_accel"), (norm_gaussian, "norm_accel") ],
+                        [start_xaccel,start_yaccel, start_zaccel, start_norm],
+                          [end_xaccel, end_yaccel, end_zaccel, end_norm],
+                          False)
