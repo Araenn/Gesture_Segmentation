@@ -3,34 +3,40 @@ import mathsUtils as MATH
 import numpy as np
 import signalUtils as SIGNAL
 
-normalised_timestamp_acc, x_accel, y_accel, z_accel, x_gyros, y_gyros, z_gyros = TXT.reading_into_txt(
-        "data/unsegmented/S1/Recorder_2019_04_03_16_35/data.txt")
-freq = 100 # based on documentaion
-smoothing_factor = 12
-down_sampling_factor = freq // 30  # 100Hz to 30Hz
+if __name__ == "__main__":
 
-# PARAMETERS FOR THE REST OF THE CODE
-window_size = 20  # Size of the moving window for computing mean and standard deviation
-envelopp_multiplier = 3  # Multiplier for the standard deviation to determine the envelopp
-threshold_multiplier = 0.4 # if too low (<0.4), detection check shows ungesture instead of gesture, if too high, gesture are too much segmented
+        normalised_timestamp_acc, x_accel, y_accel, z_accel, x_gyros, y_gyros, z_gyros = TXT.reading_into_txt(
+                "data/unsegmented/S1/Recorder_2019_04_03_16_10/data.txt")
+        freq = 100 # based on documentaion
+        smoothing_factor = 12
+        down_sampling_factor = freq // 30  # 100Hz to 30Hz
 
-sigma = 2
+        # PARAMETERS FOR THE REST OF THE CODE
+        window_size = 30  # Size of the moving window for computing mean and standard deviation
+        envelopp_multiplier = 3  # Multiplier for the standard deviation to determine the envelopp
+        threshold_multiplier = 0.4 # if too low (<0.4), detection check shows ungesture instead of gesture, if too high, gesture are too much segmented
 
-# COMPUTATION
-downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, num_samples = MATH.smooth_signal(x_accel, y_accel, z_accel,
-                                                                                                smoothing_factor, down_sampling_factor)
-downsampled_x_gyros, downsampled_y_gyros, downsampled_z_gyros, num_samples = MATH.smooth_signal(x_gyros, y_gyros, z_gyros,
-                                                                                                smoothing_factor, down_sampling_factor)
+        sigma = 2
+
+        # COMPUTATION
+        downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, num_samples = MATH.smooth_signal(x_accel, y_accel, z_accel,
+                                                                                                        smoothing_factor, down_sampling_factor)
+        downsampled_x_gyros, downsampled_y_gyros, downsampled_z_gyros, num_samples = MATH.smooth_signal(x_gyros, y_gyros, z_gyros,
+                                                                                                        smoothing_factor, down_sampling_factor)
 
 
-# Calculate the corresponding timestamp for the downsampled data
-original_timestamp = np.linspace(0, num_samples / freq, num_samples)
-downsampled_timestamp = original_timestamp[::smoothing_factor][::down_sampling_factor]
+        # Calculate the corresponding timestamp for the downsampled data
+        original_timestamp = np.linspace(0, num_samples / freq, num_samples)
+        downsampled_timestamp = original_timestamp[::smoothing_factor][::down_sampling_factor]
 
-SIGNAL.all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_accel,
-                        downsampled_timestamp, sigma, window_size,
-                        envelopp_multiplier, threshold_multiplier)
+        # SEGMENTATION
+        start_accel1, end_accel1, start_accel2, end_accel2 = SIGNAL.all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_accel,
+                                downsampled_timestamp, sigma, window_size,
+                                envelopp_multiplier, threshold_multiplier)
 
-SIGNAL.all_calculations(downsampled_x_gyros, downsampled_y_gyros, downsampled_z_gyros,
-                        downsampled_timestamp, sigma, window_size,
-                        envelopp_multiplier, threshold_multiplier)
+        SIGNAL.all_calculations(downsampled_x_gyros, downsampled_y_gyros, downsampled_z_gyros,
+                                downsampled_timestamp, sigma, window_size,
+                                envelopp_multiplier, threshold_multiplier)
+
+        test_start, test_end = MATH.merge_rectangles([start_accel1, end_accel1], [start_accel2, end_accel2])
+        print(test_start, test_end)

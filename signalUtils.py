@@ -48,3 +48,5 @@ def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_acc
                             [start_xaccel,start_yaccel, start_zaccel, start_norm],
                             [end_xaccel, end_yaccel, end_zaccel, end_norm],
                             False)
+    
+    return start_xaccel[0], end_xaccel[0], start_xaccel[1], end_xaccel[1]

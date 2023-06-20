@@ -1,5 +1,6 @@
 from scipy.ndimage import gaussian_filter1d
 import numpy as np
+from typing import List, Tuple
 
 def derivative_3_data(normalised_timestamp_acc, x_accel, y_accel, z_accel):
     x_derivative = []
@@ -38,10 +39,9 @@ def derivative(normalised_timestamp_acc, x_accel):
 
 def simple_segmentation(downsampled_timestamp, signal, sigma, window_size, envelopp_multiplier, threshold_multiplier):
     # Derivate the normalised data
-    signal_derivative = derivative(downsampled_timestamp, signal)
-
-    signal_derivative = derivative(downsampled_timestamp, signal_derivative)
-
+    #signal_derivative = derivative(downsampled_timestamp, signal)
+    #signal_derivative = derivative(downsampled_timestamp, signal_derivative)
+    signal_derivative = signal
 
     # Filtering with Gaussian filter the derivated data
     norm_gaussian = gaussian_filter1d(signal_derivative, sigma)
@@ -90,3 +90,17 @@ def smooth_signal(x_accel, y_accel, z_accel, smoothing_factor, down_sampling_fac
     downsampled_z_accel = smoothed_z_accel[::down_sampling_factor]
 
     return downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, num_samples
+
+def merge_rectangles(segment_start, segment_end):
+    new_segment_end = []
+    new_segment_start = []
+    if segment_start[1] < segment_end[0]:
+        new_segment_start = segment_start[0]
+        new_segment_end = segment_end[1]
+    elif segment_start[0] < segment_end[1]:
+        new_segment_start = segment_start[1]
+        new_segment_end = segment_end[0]
+    return new_segment_start, new_segment_end
+
+def rectangle_segmentation(window_size, rectangle_amount):
+    pass
