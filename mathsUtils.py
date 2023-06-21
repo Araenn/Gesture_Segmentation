@@ -46,7 +46,6 @@ def simple_segmentation(downsampled_timestamp, signal, sigma, window_size, envel
     # Filtering with Gaussian filter the derivated data
     norm_gaussian = gaussian_filter1d(signal_derivative, sigma)
 
-
     # Compute the adaptive envelopp using moving average and standard deviation
     abs_signal = np.abs(norm_gaussian)
     mean_signal = np.convolve(abs_signal, np.ones(window_size) / window_size, mode='same')
@@ -102,5 +101,9 @@ def merge_rectangles(segment_start, segment_end):
         new_segment_end = segment_end[0]
     return new_segment_start, new_segment_end
 
-def rectangle_segmentation(window_size, rectangle_amount):
-    pass
+def rectangle_segmentation(segment_start: List[float], segment_end: List[float]):
+    rectangle_amount = len(segment_start)
+
+    if rectangle_amount >= 3:
+        return merge_rectangles(segment_start[0], segment_end[-1])
+
