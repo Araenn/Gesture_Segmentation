@@ -109,31 +109,23 @@ def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indi
         plt.show()
 
 
-def test(signals: List[Tuple[List[float], str]], rectangles: List[Tuple[float, float]], need_buffer: bool):
+def draw_rectangle(signals: List[Tuple[List[float], str]], min_x: List[float], max_x: List[float], type: str):
     _, ax = plt.subplots()
-    patches = []
-    lines = []
 
-    for i in range(len(signals)):
-        y_signal, label = signals[i]
-        x_min, x_max = rectangles[i]
+    for i in range(0, len(signals)):
+        plt.plot(signals[0], label=signals[1])
 
-        line, = plt.plot(y_signal, label=label)
-        lines.append(line)
-
-        if len(y_signal) > 0:
-            min_y = min(y_signal)
-            max_y = max(y_signal)
-            rect = Rectangle((x_min, min_y), x_max - x_min, max_y - min_y, fill=False, edgecolor=line.get_color(), linewidth=3)
+    for i in range(0, len(min_x)):
+            norm_gaussian_part = signals[0][int(min_x[i]):int(max_x[i])]
+            min_y = min(norm_gaussian_part)
+            max_y = max(norm_gaussian_part)
+            
+            rect = Rectangle((min_x[i], min_y), max_x[i] - min_x[i], max_y - min_y, fill=False, edgecolor="blue", linewidth=3)
             ax.add_patch(rect)
-            patches.append(rect)
-
     plt.legend()
-    plt.title("Merged Rectangles")
-
-    if not need_buffer:
-        plt.savefig("./images_saved/Merged_rectangle.png")
-        plt.show()
+    plt.title(f"Merged rectangle for {type} with x, y and z channels")
+    plt.savefig(f"./images_saved/Merged_rectangles_{type}.png")
+    plt.show()
 
 
 
