@@ -1,15 +1,14 @@
 import readingsUtils.csv_reading.txtUtils as TXT
+import readingsUtils.csv_reading.csvUtils as CSV
 import mathsUtils as MATH
 import numpy as np
 import signalUtils as SIGNAL
 
 if __name__ == "__main__":
 
-        normalised_timestamp_acc, x_accel, y_accel, z_accel, x_gyros, y_gyros, z_gyros = TXT.reading_into_txt(
-                "data/unsegmented/S1/Recorder_2019_04_03_16_10/data.txt")
+        normalised_timestamp_acc, x_gyros, y_gyros, z_gyros, x_accel, y_accel, z_accel = CSV.reading_into_csv(
+                "data/our_datas/non_gesture/Non-gesture_8_Lea.csv")
         freq = 100 # based on documentaion
-        smoothing_factor = 12
-        down_sampling_factor = freq // 30  # 100Hz to 30Hz
 
         # PARAMETERS FOR THE REST OF THE CODE
         window_size = 20  # Size of the moving window for computing mean and standard deviation
@@ -18,26 +17,15 @@ if __name__ == "__main__":
 
         sigma = 2
 
-        # COMPUTATION
-        downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, num_samples = MATH.smooth_signal(x_accel, y_accel, z_accel,
-                                                                                                        smoothing_factor, down_sampling_factor)
-        downsampled_x_gyros, downsampled_y_gyros, downsampled_z_gyros, num_samples = MATH.smooth_signal(x_gyros, y_gyros, z_gyros,
-                                                                                                        smoothing_factor, down_sampling_factor)
-
-
-        # Calculate the corresponding timestamp for the downsampled data
-        original_timestamp = np.linspace(0, num_samples / freq, num_samples)
-        downsampled_timestamp = original_timestamp[::smoothing_factor][::down_sampling_factor]
-
         # SEGMENTATION
         start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel = SIGNAL.all_calculations(
-                downsampled_x_accel, downsampled_y_accel, downsampled_z_accel,
-                downsampled_timestamp, sigma, window_size,
+                x_accel, y_accel, z_accel,
+                normalised_timestamp_acc, sigma, window_size,
                 envelopp_multiplier, threshold_multiplier)
 
         start_xgyros, end_xgyros, start_ygyros, end_ygyros, start_zgyros, end_zgyros = SIGNAL.all_calculations(
-                downsampled_x_gyros, downsampled_y_gyros, downsampled_z_gyros,
-                downsampled_timestamp, sigma, window_size,
+                x_gyros, y_gyros, z_gyros,
+                normalised_timestamp_acc, sigma, window_size,
                 envelopp_multiplier, threshold_multiplier)
 
 
@@ -45,12 +33,12 @@ if __name__ == "__main__":
         segment_start_indices = [start_xaccel, start_yaccel, start_zaccel]
         segment_end_indices = [end_xaccel, end_yaccel, end_zaccel]
 
-        SIGNAL.rectangle_extraction(downsampled_x_accel, downsampled_y_accel, downsampled_z_accel,
+        SIGNAL.rectangle_extraction(x_accel, y_accel, z_accel,
                                     start_xaccel, start_yaccel, start_zaccel,
                                     end_xaccel, end_yaccel, end_zaccel,
                                     "acceleration")
         
-        SIGNAL.rectangle_extraction(downsampled_x_gyros, downsampled_y_gyros, downsampled_z_gyros,
+        SIGNAL.rectangle_extraction(x_gyros, y_gyros, z_gyros,
                                     start_xgyros, start_ygyros, start_zgyros,
                                     end_xgyros, end_ygyros, end_zgyros,
                                     "gyroscope")

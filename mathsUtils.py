@@ -39,9 +39,8 @@ def derivative(normalised_timestamp_acc, x_accel):
 
 def simple_segmentation(downsampled_timestamp, signal, sigma, window_size, envelopp_multiplier, threshold_multiplier):
     # Derivate the normalised data
-    #signal_derivative = derivative(downsampled_timestamp, signal)
-    #signal_derivative = derivative(downsampled_timestamp, signal_derivative)
-    signal_derivative = signal
+    signal_derivative = derivative(downsampled_timestamp, signal)
+    signal_derivative = derivative(downsampled_timestamp, signal_derivative)
 
     # Filtering with Gaussian filter the derivated data
     norm_gaussian = gaussian_filter1d(signal_derivative, sigma)
