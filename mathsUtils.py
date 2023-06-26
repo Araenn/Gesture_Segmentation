@@ -100,9 +100,17 @@ def merge_rectangles(segment_start, segment_end):
         new_segment_end = segment_end[0]
     return new_segment_start, new_segment_end
 
-def rectangle_segmentation(segment_start: List[float], segment_end: List[float]):
-    rectangle_amount = len(segment_start)
+def rectangle_segmentation(segment_start: Tuple[List[float], List[float], List[float]], segment_end: Tuple[List[float], List[float], List[float]]):
+    min_list = min(len(segment_start[0]), len(segment_start[1]), len(segment_start[2]))
 
-    if rectangle_amount >= 3:
-        return merge_rectangles(segment_start[0], segment_end[-1])
+    new_start = []
+    new_end = []
+    for i in range(0, min_list):
+        if segment_start[0][i] != 0 and segment_start[1][i] != 0 and segment_start[2][i] != 0:
+            min_x = min(segment_start[0][i], segment_start[1][i], segment_start[2][i])
+            max_x = max(segment_end[0][i], segment_end[1][i], segment_end[2][i])
+            new_start.append(min_x)
+            new_end.append(max_x)
+
+    return new_start, new_end
 
