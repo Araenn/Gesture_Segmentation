@@ -52,15 +52,18 @@ def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_acc
     
     return start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel
 
-def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y_accel, z_accel):
+def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y_accel, z_accel, type):
         movement_ranges = []
 
         for x_start, x_end in x_coordinates:
                 for y_start, y_end in y_coordinates:
                         for z_start, z_end in z_coordinates:
-                        # Check if at least 2 axes has crossing rectangles
-                                if (x_end >= y_start and y_end >= x_start) and (x_end >= z_start and z_end >= x_start):
-                                        movement_ranges.append(((x_start, x_end), (y_start, y_end), (z_start, z_end)))
+                        # Check if at least 2 axes have crossing rectangles
+                                if (x_end > y_start or y_end > x_start) and (x_end > z_start or z_end > x_start):
+                                        # Determine the overlapping range
+                                        overlapping_start = max(x_start, y_start, z_start)
+                                        overlapping_end = min(x_end, y_end, z_end)
+                                        movement_ranges.append(((overlapping_start, overlapping_end), (y_start, y_end), (z_start, z_end)))
 
         x = []
         y = []
@@ -69,7 +72,7 @@ def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y
                 x.append(x_range)
                 y.append(y_range)
                 z.append(z_range)
-                print(f"X: {x_range}  Y: {y_range}  Z: {z_range}")
+                #print(f"X: {x_range}  Y: {y_range}  Z: {z_range}")
 
         new_start = []
         new_end = []
@@ -91,8 +94,8 @@ def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y
                 rect = Rectangle((new_start[i], min_y), new_end[i] - new_start[i], max_y - min_y, fill=False, edgecolor="blue", linewidth=3)
                 ax.add_patch(rect)
         plt.legend()
-        plt.title(f"Merged rectangle for Acc with x, y and z channels")
-        plt.savefig(f"./images_saved/Merged_rectangles_Acc.png")
+        plt.title(f"Merged rectangle for {type} with x, y and z channels")
+        plt.savefig(f"./images_saved/Merged_rectangles_{type}.png")
         plt.show()
 
         _, ax = plt.subplots()
@@ -110,6 +113,6 @@ def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y
                 rect = Rectangle((new_start[i], min_y), new_end[i] - new_start[i], max_y - min_y, fill=False, edgecolor="red", linewidth=3)
                 ax.add_patch(rect)
         plt.legend()
-        plt.title(f"Merged rectangle for Acc with the norm")
-        plt.savefig(f"./images_saved/Merged_rectangles_Acc_norm.png")
+        plt.title(f"Merged rectangle for {type} with the norm")
+        plt.savefig(f"./images_saved/Merged_rectangles_{type}_norm.png")
         plt.show()
