@@ -79,7 +79,7 @@ def plots_data(x:List[float], title:str, need_buffered:bool, *functions:List[Tup
     plt.legend(legend)
     
     if not need_buffered:
-        plt.savefig(f"./images_saved/{file_name}.png")
+        plt.savefig(f"./images_saved/results/{file_name}.png")
         plt.show()
 
 def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indices: List[List[float]], segment_end_indices: List[List[float]], need_buffer: bool):
@@ -105,7 +105,7 @@ def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indi
     plt.title("Segmentation check")
 
     if not need_buffer:
-        plt.savefig("./images_saved/Segmentation_check.png")
+        plt.savefig("./images_saved/results/Segmentation_check.png")
         plt.show()
 
 
@@ -125,7 +125,7 @@ def draw_rectangle(signals: List[Tuple[List[float], str]], min_x: List[float], m
             ax.add_patch(rect)
     plt.legend()
     plt.title(f"Merged rectangle for {type} with x, y and z channels")
-    plt.savefig(f"./images_saved/Merged_rectangles_{type}.png")
+    plt.savefig(f"./images_saved/results/Merged_rectangles_{type}.png")
     plt.show()
 
 
