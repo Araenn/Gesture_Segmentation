@@ -112,8 +112,9 @@ def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indi
 def draw_rectangle(signals: List[Tuple[List[float], str]], min_x: List[float], max_x: List[float], type: str):
     _, ax = plt.subplots()
 
-    for i in range(0, len(signals)):
-        plt.plot(signals[0], label=signals[1])
+    for signal, label in signals:
+        plt.plot(signal, label=label)
+
 
     for i in range(0, len(min_x)):
             norm_gaussian_part = signals[0][int(min_x[i]):int(max_x[i])]

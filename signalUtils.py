@@ -52,7 +52,7 @@ def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_acc
     
     return start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel
 
-def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates):
+def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y_accel, z_accel):
         movement_ranges = []
 
         for x_start, x_end in x_coordinates:
@@ -62,5 +62,54 @@ def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates):
                                 if (x_end >= y_start and y_end >= x_start) and (x_end >= z_start and z_end >= x_start):
                                         movement_ranges.append(((x_start, x_end), (y_start, y_end), (z_start, z_end)))
 
+        x = []
+        y = []
+        z = []
         for x_range, y_range, z_range in movement_ranges:
+                x.append(x_range)
+                y.append(y_range)
+                z.append(z_range)
                 print(f"X: {x_range}  Y: {y_range}  Z: {z_range}")
+
+        new_start = []
+        new_end = []
+        for i in range(0, int(len(x))):
+                new_start.append(min(x[i][0], y[i][0], z[i][0]))
+                new_end.append(max(x[i][1], y[i][1], z[i][1]))
+
+        _, ax = plt.subplots()
+        plt.plot(x_accel, label="x")
+        plt.plot(y_accel, label="y")
+        plt.plot(z_accel, label="z")
+
+
+        for i in range(0, len(new_start)):
+                norm_gaussian_part = x_accel[int(new_start[i]):int(new_end[i])]
+                min_y = min(norm_gaussian_part)
+                max_y = max(norm_gaussian_part)
+                
+                rect = Rectangle((new_start[i], min_y), new_end[i] - new_start[i], max_y - min_y, fill=False, edgecolor="blue", linewidth=3)
+                ax.add_patch(rect)
+        plt.legend()
+        plt.title(f"Merged rectangle for Acc with x, y and z channels")
+        plt.savefig(f"./images_saved/Merged_rectangles_Acc.png")
+        plt.show()
+
+        _, ax = plt.subplots()
+        norm = []
+        for i in range(0, len(x_accel)):
+                norm.append(sqrt(pow(x_accel[i], 2) + pow(y_accel[i], 2) + pow(z_accel[i], 2)))
+        plt.plot(norm, label="norm")
+
+
+        for i in range(0, len(new_start)):
+                norm_gaussian_part = norm[int(new_start[i]):int(new_end[i])]
+                min_y = min(norm_gaussian_part)
+                max_y = max(norm_gaussian_part)
+                
+                rect = Rectangle((new_start[i], min_y), new_end[i] - new_start[i], max_y - min_y, fill=False, edgecolor="red", linewidth=3)
+                ax.add_patch(rect)
+        plt.legend()
+        plt.title(f"Merged rectangle for Acc with the norm")
+        plt.savefig(f"./images_saved/Merged_rectangles_Acc_norm.png")
+        plt.show()

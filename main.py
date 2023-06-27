@@ -3,6 +3,7 @@ import readingsUtils.csv_reading.csvUtils as CSV
 import mathsUtils as MATH
 import numpy as np
 import signalUtils as SIGNAL
+import graphUtils as GRAPH
 
 if __name__ == "__main__":
 
@@ -29,13 +30,12 @@ if __name__ == "__main__":
 
 
         # MERGED RECTANGLES
-        # Coordonnées des segments de mouvement
         segment_start_indices = [start_xaccel, start_yaccel, start_zaccel]
         segment_end_indices = [end_xaccel, end_yaccel, end_zaccel]
 
-        # Combinaison des coordonnées des segments pour chaque axe
         x_coordinates = list(zip(start_xaccel, end_xaccel))
         y_coordinates = list(zip(start_yaccel, end_yaccel))
         z_coordinates = list(zip(start_zaccel, end_zaccel))
 
-        SIGNAL.rectangle_extraction(x_coordinates, y_coordinates, z_coordinates)
+        SIGNAL.rectangle_extraction(x_coordinates, y_coordinates, z_coordinates,
+                                    x_accel, y_accel, z_accel)
