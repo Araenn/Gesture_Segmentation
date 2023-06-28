@@ -31,13 +31,13 @@ def generate_protocol(sequence_number: int, subject_number: int, gesture_number:
 
             for index, gesture in enumerate(sequence):
                 gesture_name = gestures[gesture]
-                gesture_image_path = f"images/{gesture_name}.png"  # replace with the actual path
+                gesture_image_path = f"images/{gesture_name}.png"
                 gesture_image = Image.open(gesture_image_path)
 
                 gesture_image = gesture_image.resize((image_width, image_height))
                 sequence_image.paste(gesture_image, (index * image_width, 0))
 
-            sequence_image_path = f"../images_saved/sequences/subject{subject + 1}_sequence{sequence_num + 1}.png"
+            sequence_image_path = f"../images_saved/sequences_generated/subject{subject + 1}_sequence{sequence_num + 1}.png"
             os.makedirs(os.path.dirname(sequence_image_path), exist_ok=True)
             sequence_image.save(sequence_image_path)
 
@@ -45,8 +45,8 @@ def generate_protocol(sequence_number: int, subject_number: int, gesture_number:
 
 
 if __name__ == "__main__":
-    sequence_number = 20
-    subject_number = 2
+    sequence_number = 6
+    subject_number = 1
     gesture_number = 12
 
     generate_protocol(sequence_number, subject_number, gesture_number)
