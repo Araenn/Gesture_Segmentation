@@ -1,9 +1,10 @@
 import readingsUtils.csv_reading.txtUtils as TXT
 import readingsUtils.csv_reading.csvUtils as CSV
-import mathsUtils as MATH
+import matplotlib.pyplot as plt
 import numpy as np
 import signalUtils as SIGNAL
 import graphUtils as GRAPH
+from math import sqrt
 
 if __name__ == "__main__":
 
@@ -16,6 +17,7 @@ if __name__ == "__main__":
         threshold_multiplier = 0.5 # if too low (<0.4), detection check shows ungesture instead of gesture, if too high, gesture are too much segmented
 
         sigma = 0.1
+
 
         # SEGMENTATION
         start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel = SIGNAL.all_calculations(

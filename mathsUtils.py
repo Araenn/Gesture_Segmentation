@@ -1,27 +1,7 @@
 from scipy.ndimage import gaussian_filter1d
 import numpy as np
 from typing import List, Tuple
-
-def derivative_3_data(normalised_timestamp_acc, x_accel, y_accel, z_accel):
-    x_derivative = []
-    y_derivative = []
-    z_derivative = []
-    t_i = normalised_timestamp_acc[0]
-    for i in range(1, len(normalised_timestamp_acc)):
-        t_i1 = normalised_timestamp_acc[i]
-        a_x = (x_accel[i] - x_accel[i-1]) / (t_i1 - t_i)
-        a_y = (y_accel[i] - y_accel[i-1]) / (t_i1 - t_i)
-        a_z = (z_accel[i] - z_accel[i-1]) / (t_i1 - t_i)
-        x_derivative.append(a_x)
-        y_derivative.append(a_y)
-        z_derivative.append(a_z)
-        t_i = t_i1
-
-    x_derivative.append(x_derivative[-1])
-    y_derivative.append(y_derivative[-1])
-    z_derivative.append(z_derivative[-1])
-
-    return x_derivative, y_derivative, z_derivative
+from math import sqrt, pow
 
 def derivative(normalised_timestamp_acc, x_accel):
     x_derivative = []
@@ -114,3 +94,18 @@ def rectangle_segmentation(segment_start: Tuple[List[float], List[float], List[f
 
     return new_start, new_end
 
+def compute_norm(*signals: List[List[float]]):
+    signal_amount = len(signals)
+    min_len_signal = len(signals[0])
+    for i in range(signal_amount):
+        if len(signals[i]) < min_len_signal:
+            min_len_signal = len(signals[i])
+     
+    norm = []
+    for i in range(min_len_signal):
+        res = 0
+        for j in range(signal_amount):
+            res += pow(signals[j][i], 2)
+        norm.append(sqrt(res))
+
+    return norm

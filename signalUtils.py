@@ -4,21 +4,48 @@ import mathsUtils as MATH
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import random
+import numpy as np
 
 def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, downsampled_timestamp, sigma, window_size, envelopp_multiplier, threshold_multiplier):
     # Normalise the acceleration data
-    norm = []
-    for i in range(0, len(downsampled_x_accel)):
-            norm.append(sqrt(pow(downsampled_x_accel[i], 2) + pow(downsampled_y_accel[i], 2) + pow(downsampled_z_accel[i], 2)))
 
-    norm_derivative, norm_gaussian, abs_norm, envelopp_norm, start_norm, end_norm = MATH.simple_segmentation(
-            downsampled_timestamp, norm, sigma, window_size, envelopp_multiplier, threshold_multiplier)
     xaccel_derivative, xaccel_gaussian, abs_xaccel, envelopp_xaccel, start_xaccel, end_xaccel = MATH.simple_segmentation(
             downsampled_timestamp, downsampled_x_accel, sigma, window_size, envelopp_multiplier, threshold_multiplier)
     yaccel_derivative, yaccel_gaussian, abs_yaccel, envelopp_yaccel, start_yaccel, end_yaccel = MATH.simple_segmentation(
             downsampled_timestamp, downsampled_y_accel, sigma, window_size, envelopp_multiplier, threshold_multiplier)
     zaccel_derivative, zaccel_gaussian, abs_zaccel, envelopp_zaccel, start_zaccel, end_zaccel = MATH.simple_segmentation(
             downsampled_timestamp, downsampled_z_accel, sigma, window_size, envelopp_multiplier, threshold_multiplier)
+    
+    norm_derivative = MATH.compute_norm(xaccel_derivative, yaccel_derivative, zaccel_derivative)
+    norm_gaussian = MATH.compute_norm(xaccel_gaussian, yaccel_gaussian, zaccel_gaussian)
+
+    abs_norm = np.abs(norm_gaussian)
+    mean_norm = np.convolve(abs_norm, np.ones(window_size) / window_size, mode='same')
+    std_norm = np.convolve((abs_norm - mean_norm)**2, np.ones(window_size) / window_size, mode='same')
+    envelopp_norm = envelopp_multiplier * np.sqrt(std_norm)
+    threshold_norm = threshold_multiplier * max(envelopp_norm)
+
+    # Apply adaptive thresholding to identify movement segments
+    is_movement = envelopp_norm > threshold_norm
+
+    # Find the indices of movement segments
+    segment_start_indices = np.where(np.diff(is_movement.astype(int)) == 1)[0] + 1
+    segment_end_indices = np.where(np.diff(is_movement.astype(int)) == -1)[0] + 1
+
+
+    # Print the segment start and end indices
+    start_norm = []
+    end_norm = []
+    for start, end in zip(segment_start_indices, segment_end_indices):
+        # for exception, allow to throw errors
+        if start > end:
+            temp = start
+            start = end
+            end = temp
+        #print("Segment : Start = {} seconds, End = {} seconds".format(start, end))
+        start_norm.append(start)
+        end_norm.append(end)
+
 
     GRAPH.plots_data(downsampled_timestamp, 
                     "Derivative",
@@ -101,9 +128,7 @@ def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y
         plt.show()
 
         _, ax = plt.subplots()
-        norm = []
-        for i in range(0, len(x_accel)):
-                norm.append(sqrt(pow(x_accel[i], 2) + pow(y_accel[i], 2) + pow(z_accel[i], 2)))
+        norm = MATH.compute_norm(x_accel, y_accel, z_accel)
         plt.plot(norm, label="norm")
 
 
