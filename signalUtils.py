@@ -3,6 +3,7 @@ from math import sqrt
 import mathsUtils as MATH
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+import random
 
 def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, downsampled_timestamp, sigma, window_size, envelopp_multiplier, threshold_multiplier):
     # Normalise the acceleration data
@@ -85,13 +86,14 @@ def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y
         plt.plot(y_accel, label="y")
         plt.plot(z_accel, label="z")
 
-
+        colorList = ["blue", "red", "green", "cyan", "magenta", "yellow", "orange", "purple", "brown"]
         for i in range(0, len(new_start)):
+                rectangleColor = random.choice(colorList)
                 norm_gaussian_part = x_accel[int(new_start[i]):int(new_end[i])]
                 min_y = min(norm_gaussian_part)
                 max_y = max(norm_gaussian_part)
                 
-                rect = Rectangle((new_start[i], min_y), new_end[i] - new_start[i], max_y - min_y, fill=False, edgecolor="blue", linewidth=3)
+                rect = Rectangle((new_start[i], min_y), new_end[i] - new_start[i], max_y - min_y, fill=False, edgecolor=rectangleColor, linewidth=3)
                 ax.add_patch(rect)
         plt.legend()
         plt.title(f"Merged rectangle for {type} with x, y and z channels")
@@ -106,11 +108,12 @@ def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y
 
 
         for i in range(0, len(new_start)):
+                rectangleColor = random.choice(colorList)
                 norm_gaussian_part = norm[int(new_start[i]):int(new_end[i])]
                 min_y = min(norm_gaussian_part)
                 max_y = max(norm_gaussian_part)
                 
-                rect = Rectangle((new_start[i], min_y), new_end[i] - new_start[i], max_y - min_y, fill=False, edgecolor="red", linewidth=3)
+                rect = Rectangle((new_start[i], min_y), new_end[i] - new_start[i], max_y - min_y, fill=False, edgecolor=rectangleColor, linewidth=3)
                 ax.add_patch(rect)
         plt.legend()
         plt.title(f"Merged rectangle for {type} with the norm")
