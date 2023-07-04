@@ -1,6 +1,8 @@
-*.mp4
-*.mp3
-*.jpg
-*.jpeg
-*.pyc
+**/*.mp4
+**/*.mp3
+**/*.jpg
+**/*.jpeg
+**/*.pyc
+./images_saved/sequences_generated/*.png
+./data/RGB/**/*.png
 __pycache__
