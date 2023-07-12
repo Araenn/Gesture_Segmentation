@@ -17,7 +17,7 @@ def derivative(normalised_timestamp_acc, x_accel):
     return x_derivative
 
 
-def simple_segmentation(downsampled_timestamp, signal, sigma, threshold_multiplier):
+def simple_segmentation(downsampled_timestamp, signal, sigma, window_size, envelopp_multiplier, threshold_multiplier):
     # Derivate the normalised data
     signal_derivative = derivative(downsampled_timestamp, signal)
     signal_derivative = derivative(downsampled_timestamp, signal_derivative)
@@ -27,17 +27,32 @@ def simple_segmentation(downsampled_timestamp, signal, sigma, threshold_multipli
 
     # Compute the adaptive envelopp using moving average and standard deviation
     abs_signal = np.abs(norm_gaussian)
-    #mean_signal = np.convolve(abs_signal, np.ones(window_size) / window_size, mode='same')
-    #std_signal = np.convolve((abs_signal - mean_signal)**2, np.ones(window_size) / window_size, mode='same')
-    #envelopp = envelopp_multiplier * np.sqrt(std_signal)
-    #threshold = threshold_multiplier * max(envelopp)
+    mean_signal = np.convolve(abs_signal, np.ones(window_size) / window_size, mode='same')
+    std_signal = np.convolve((abs_signal - mean_signal)**2, np.ones(window_size) / window_size, mode='same')
+    envelopp = envelopp_multiplier * np.sqrt(std_signal)
+    threshold = threshold_multiplier * max(envelopp)
 
-    threshold = threshold_multiplier * max(abs_signal)
+    # Apply adaptive thresholding to identify movement segments
+    is_movement = envelopp > threshold
 
     # Find the indices of movement segments
-    markers_begin, markers_end = find_bounds(downsampled_timestamp, abs_signal, threshold)
+    segment_start_indices = np.where(np.diff(is_movement.astype(int)) == 1)[0] + 1
+    segment_end_indices = np.where(np.diff(is_movement.astype(int)) == -1)[0] + 1
 
-    return signal_derivative, norm_gaussian, abs_signal, markers_begin, markers_end
+
+    # Print the segment start and end indices
+    start_output = []
+    end_output = []
+    for start, end in zip(segment_start_indices, segment_end_indices):
+        # for exception, allow to throw errors
+        if start > end:
+            temp = start
+            start = end
+            end = temp
+        #print("Segment : Start = {} seconds, End = {} seconds".format(start, end))
+        start_output.append(start)
+        end_output.append(end)
+    return signal_derivative, norm_gaussian, abs_signal, envelopp, start_output, end_output
 
 def smooth_signal(x_accel, y_accel, z_accel, smoothing_factor, down_sampling_factor):
     num_samples = (len(x_accel) // smoothing_factor) * smoothing_factor
@@ -94,28 +109,3 @@ def compute_norm(*signals: List[List[float]]):
         norm.append(sqrt(res))
 
     return norm
-
-def find_bounds(x, signal, threshold):
-    markers_begin = []
-    markers_end = []
-    
-    was_in_rect = False
-    for i in range(len(x)):
-        x_i = x[i]
-        y_i = signal[i]
-
-        in_rect = y_i > threshold
-        
-        if in_rect:
-            if not was_in_rect:
-                was_in_rect = True
-                markers_begin.append(x_i)
-        else:
-            if was_in_rect:
-                was_in_rect = False
-                markers_end.append(x_i)
-    
-    if was_in_rect:
-        markers_end.append(signal[-1])
-            
-    return markers_begin, markers_end
