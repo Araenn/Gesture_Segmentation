@@ -1,12 +1,8 @@
 import graphUtils as GRAPH
-from math import sqrt
 import mathsUtils as MATH
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
-import random
-import numpy as np
 
-def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, downsampled_timestamp, sigma, threshold_multiplier):
+def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_accel, downsampled_timestamp, sigma, threshold_multiplier, true_mvmt):
     # Normalise the acceleration data
 
     xaccel_derivative, xaccel_gaussian, abs_xaccel, start_xaccel, end_xaccel = MATH.simple_segmentation(
@@ -49,9 +45,9 @@ def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_acc
     plt.subplot(4,1,4)
     GRAPH.plots_data(downsampled_timestamp, "Norm", False, (norm_gaussian, "abs"))
 
-
+    
     GRAPH.plots_rectangles([ (xaccel_gaussian, "x"), (yaccel_gaussian, "y"), (zaccel_gaussian, "z"), (norm_gaussian, "norm") ],
-                            [start_xaccel,start_yaccel, start_zaccel, markers_begin],
+                            [start_xaccel, start_yaccel, start_zaccel, markers_begin],
                             [end_xaccel, end_yaccel, end_zaccel, markers_end],
                             False)
     
@@ -59,4 +55,10 @@ def all_calculations(downsampled_x_accel, downsampled_y_accel, downsampled_z_acc
     print(f"y rectangle amount : {len(start_yaccel)}")
     print(f"z rectangle amount : {len(start_zaccel)}")
     print(f"norm rectangle amount : {len(markers_begin)}")
+
+    GRAPH.plot_checking(downsampled_timestamp, 
+                        [ (xaccel_gaussian, "x"), (yaccel_gaussian, "y"), (zaccel_gaussian, "z"), (norm_gaussian, "norm") ],
+                        [start_xaccel, start_yaccel, start_zaccel, markers_begin],
+                        [end_xaccel, end_yaccel, end_zaccel, markers_end],
+                        true_mvmt)
     return start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel

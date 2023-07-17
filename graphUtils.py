@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from math import floor, ceil
 
 def show_3_subplot(x, y1, y2, y3, title, ylabel, xlabel):
     plt.subplot(3, 1, 1)
@@ -93,7 +94,7 @@ def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indi
         for start, end in zip(start_indices, end_indices):
             if start > end:
                 start, end = end, start
-            norm_gaussian_part = y_signal[0][int(start):int(end)]
+            norm_gaussian_part = y_signal[0][floor(start):ceil(end)]
             min_y = min(norm_gaussian_part)
             max_y = max(norm_gaussian_part)
             rect = Rectangle((start, min_y), end - start, max_y - min_y, fill=False, edgecolor=line.get_color(), linewidth=3)
@@ -109,24 +110,31 @@ def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indi
         plt.show()
 
 
-def draw_rectangle(signals: List[Tuple[List[float], str]], min_x: List[float], max_x: List[float], type: str):
-    _, ax = plt.subplots()
+def plot_checking(timestamp, y_signals, seg_start, seg_end, true_mvmt):
+    zeros = []
+    for i in range(0, len(true_mvmt)):
+        zeros.append(max(y_signals[0][0]))
 
-    for signal, label in signals:
-        plt.plot(signal, label=label)
-
-
-    for i in range(0, len(min_x)):
-            norm_gaussian_part = signals[0][int(min_x[i]):int(max_x[i])]
-            min_y = min(norm_gaussian_part)
-            max_y = max(norm_gaussian_part)
+    _, axs = plt.subplots(len(y_signals))
+    for i in range(0, len(y_signals)):
+        axs[i].plot(timestamp, y_signals[i][0])
+        for j, (y_signal, start_indices, end_indices) in enumerate(zip(y_signals, seg_start, seg_end)):
+            for start, end in zip(start_indices, end_indices):
+                norm_gaussian_part = y_signal[0][floor(start):ceil(end)]
+                min_y = min(norm_gaussian_part)
+                max_y = max(norm_gaussian_part)
+                rect = Rectangle((start, min_y), end - start, max_y - min_y, fill=False, edgecolor="red", linewidth=3)
+                axs[i].add_patch(rect)
             
-            rect = Rectangle((min_x[i], min_y), max_x[i] - min_x[i], max_y - min_y, fill=False, edgecolor="blue", linewidth=3)
-            ax.add_patch(rect)
-    plt.legend()
-    plt.title(f"Merged rectangle for {type} with x, y and z channels")
-    plt.savefig(f"./images_saved/results/Merged_rectangles_{type}.png")
-    plt.show()
+        axs[i].stem(true_mvmt, zeros, linefmt="black", markerfmt='none', label="true", )
+        
+    
 
+    
+    plt.legend()
+    plt.title("Segmentation check with true data")
+    plt.savefig("./images_saved/results/Labelised.png")
+
+    plt.show()
 
 
