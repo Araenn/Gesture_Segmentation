@@ -83,24 +83,26 @@ def plots_data(x:List[float], title:str, need_buffered:bool, *functions:List[Tup
         plt.savefig(f"./images_saved/results/{file_name}.png")
         plt.show()
 
-def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indices: List[List[float]], segment_end_indices: List[List[float]], need_buffer: bool):
+def plots_rectangles(timestamp, y_signals: List[Tuple[List[float],str]], segment_start_indices: List[List[float]], segment_end_indices: List[List[float]], fs, need_buffer: bool):
     _, ax = plt.subplots()
     patches = []
     lines = []
 
     for i, (y_signal, start_indices, end_indices) in enumerate(zip(y_signals, segment_start_indices, segment_end_indices)):
-        line, = plt.plot(y_signal[0], label=y_signal[1])
+        line, = plt.plot(timestamp, y_signal[0], label=y_signal[1])
         lines.append(line)
         for start, end in zip(start_indices, end_indices):
-            if start > end:
-                start, end = end, start
-            norm_gaussian_part = y_signal[0][floor(start):ceil(end)]
+            start_sample = floor(start * fs)
+            end_sample = ceil(end * fs)
+            
+            norm_gaussian_part = y_signal[0][start_sample:end_sample]
             min_y = min(norm_gaussian_part)
             max_y = max(norm_gaussian_part)
             rect = Rectangle((start, min_y), end - start, max_y - min_y, fill=False, edgecolor=line.get_color(), linewidth=3)
             ax.add_patch(rect)
             patches.append(rect)
         
+    
         
     plt.legend()
     plt.title("Segmentation check")
@@ -110,31 +112,29 @@ def plots_rectangles(y_signals: List[Tuple[List[float],str]], segment_start_indi
         plt.show()
 
 
-def plot_checking(timestamp, y_signals, seg_start, seg_end, true_mvmt):
-    zeros = []
-    for i in range(0, len(true_mvmt)):
-        zeros.append(max(y_signals[0][0]))
-
+def plot_checking(timestamp, y_signals, seg_start, seg_end, true_mvmt, fs):
     _, axs = plt.subplots(len(y_signals))
-    for i in range(0, len(y_signals)):
-        axs[i].plot(timestamp, y_signals[i][0])
-        for j, (y_signal, start_indices, end_indices) in enumerate(zip(y_signals, seg_start, seg_end)):
-            for start, end in zip(start_indices, end_indices):
-                norm_gaussian_part = y_signal[0][floor(start):ceil(end)]
-                min_y = min(norm_gaussian_part)
-                max_y = max(norm_gaussian_part)
-                rect = Rectangle((start, min_y), end - start, max_y - min_y, fill=False, edgecolor="red", linewidth=3)
-                axs[i].add_patch(rect)
+    
+    for i, (y_signal, start_indices, end_indices) in enumerate(zip(y_signals, seg_start, seg_end)):
+        zeros = [max(y_signals[0][0])] * len(true_mvmt)
+        print(len(zeros), len(true_mvmt))
+        axs[i].plot(timestamp, y_signals[i][0], label=y_signals[i][1])
+        for start, end in zip(start_indices, end_indices):
+            start_sample = floor(start * fs)
+            end_sample = ceil(end * fs)
             
-        axs[i].stem(true_mvmt, zeros, linefmt="black", markerfmt='none', label="true", )
-        
-    
+            norm_gaussian_part = y_signal[0][start_sample:end_sample]
+            min_y = min(norm_gaussian_part)
+            max_y = max(norm_gaussian_part)
+            rect = Rectangle((start, min_y), end - start, max_y - min_y, fill=False, edgecolor="red", linewidth=3)
+            axs[i].add_patch(rect)
 
-    
-    plt.legend()
-    plt.title("Segmentation check with true data")
+        axs[i].stem(true_mvmt, zeros, linefmt="black", markerfmt='none', label="true")
+
+        axs[i].legend()
+
+    plt.suptitle("Segmentation check with true data")
     plt.savefig("./images_saved/results/Labelised.png")
-
     plt.show()
 
 
