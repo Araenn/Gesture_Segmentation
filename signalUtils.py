@@ -16,7 +16,6 @@ def all_calculations(x_accel, y_accel, z_accel, timestamp, sigma, threshold_mult
     norm_gaussian = MATH.compute_norm(xaccel_gaussian, yaccel_gaussian, zaccel_gaussian)
     threshold = threshold_multiplier * max(norm_gaussian)
 
-    new_timestamp = list(range(0, len(x_accel)))
     # Find the indices of movement segments
     markers_begin, markers_end = MATH.find_bounds(timestamp, norm_gaussian, threshold)
 

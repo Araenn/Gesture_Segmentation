@@ -29,7 +29,6 @@ def simple_segmentation(timestamp, signal, sigma, threshold_multiplier):
 
     threshold = threshold_multiplier * max(abs_signal)
 
-    new_timestamp = list(range(0, len(signal)))
     # Find the indices of movement segments
     markers_begin, markers_end = find_bounds(timestamp, abs_signal, threshold)
     return signal_derivative, norm_gaussian, abs_signal, markers_begin, markers_end
@@ -70,8 +69,4 @@ def find_bounds(x, signal, threshold):
     
     if was_in_rect:
         markers_end.append(x[-1])
-        print("yes")
-            
-    print(markers_begin, markers_end)
-    print(len(markers_begin))
     return markers_begin, markers_end
