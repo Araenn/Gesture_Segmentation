@@ -24,6 +24,7 @@ def simple_segmentation(timestamp, signal, sigma, threshold_multiplier):
     # Filtering with Gaussian filter the derivated data
     norm_gaussian = gaussian_filter1d(signal_derivative, sigma)
 
+    
     # Compute the adaptive envelopp using moving average and standard deviation
     abs_signal = abs(norm_gaussian)
 
@@ -70,3 +71,38 @@ def find_bounds(x, signal, threshold):
     if was_in_rect:
         markers_end.append(x[-1])
     return markers_begin, markers_end
+
+def non_max_suppression(seg_start_list, seg_end_list, threshold):
+    selected_indices_start = []
+    selected_indices_end = []
+    n = len(seg_start_list)
+
+    i = 0
+    while i < n - 1:
+        end_i = seg_end_list[i]
+        j = i + 1
+        while j < n - 1:
+            if ((threshold > 0 and -end_i + seg_start_list[j] < threshold)
+                or (threshold <= 0 and end_i - seg_start_list[j] > threshold)):
+                j += 1
+            else:
+                break
+        selected_indices_start.append(seg_start_list[i])
+        selected_indices_end.append(seg_end_list[j])
+        i = j + 1
+    """
+    for i in range(1, len(seg_start_list)):
+        diff_start = seg_end_list[i - 1] - seg_start_list[i]
+        if diff_start <= threshold:
+            selected_indices_start.append(min(seg_start_list[i - 1], seg_start_list[i]))
+            selected_indices_end.append(max(seg_end_list[i - 1], seg_end_list[i]))
+    """
+            
+    return selected_indices_start, selected_indices_end
+
+def normalize_data(data):
+    min_val = min(data)
+    max_val = max(data)
+    normalized_data = [(x - min_val) / (max_val - min_val) for x in data]
+    normalized_scaled_data = [2 * x - 1 for x in normalized_data]
+    return normalized_scaled_data

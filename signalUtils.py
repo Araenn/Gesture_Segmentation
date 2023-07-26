@@ -1,6 +1,7 @@
 import graphUtils as GRAPH
 import mathsUtils as MATH
 import matplotlib.pyplot as plt
+import numpy as np
 
 def all_calculations(x_accel, y_accel, z_accel, timestamp, sigma, threshold_multiplier, true_mvmt, fs):
     # Normalise the acceleration data
@@ -14,6 +15,7 @@ def all_calculations(x_accel, y_accel, z_accel, timestamp, sigma, threshold_mult
     
     norm_derivative = MATH.compute_norm(xaccel_derivative, yaccel_derivative, zaccel_derivative)
     norm_gaussian = MATH.compute_norm(xaccel_gaussian, yaccel_gaussian, zaccel_gaussian)
+    
     threshold = threshold_multiplier * max(norm_gaussian)
 
     # Find the indices of movement segments
@@ -60,5 +62,31 @@ def all_calculations(x_accel, y_accel, z_accel, timestamp, sigma, threshold_mult
                         [ (xaccel_gaussian, "x"), (yaccel_gaussian, "y"), (zaccel_gaussian, "z"), (norm_gaussian, "norm") ],
                         [start_xaccel, start_yaccel, start_zaccel, markers_begin],
                         [end_xaccel, end_yaccel, end_zaccel, markers_end],
-                        true_mvmt, fs)
+                        true_mvmt, fs, "raw")
+    
+    iou_threshold = 2
+
+    new_start_norm, new_end_norm = MATH.non_max_suppression(markers_begin, markers_end, iou_threshold)
+    new_start_x, new_end_x = MATH.non_max_suppression(start_xaccel, end_xaccel, iou_threshold)
+    new_start_y, new_end_y = MATH.non_max_suppression(start_yaccel, end_yaccel, iou_threshold)
+    new_start_z, new_end_z = MATH.non_max_suppression(start_zaccel, end_zaccel, iou_threshold)
+
+    
+    GRAPH.plot_checking(timestamp,
+                        [(xaccel_gaussian, "x"), (yaccel_gaussian, "y"), (zaccel_gaussian, "z"), (norm_gaussian, "norm")],
+                        [new_start_x, new_start_y, new_start_z, new_start_norm],
+                        [new_end_x, new_end_y, new_end_z, new_end_norm],
+                        true_mvmt,
+                        fs, "corrected")
+
+    print(f"new rectangles : {len(new_start_norm)}")
+    
     return start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel
+
+def channels_stats(x, y, z):
+    abs_x = np.abs(x)
+    abs_y = np.abs(y)
+    abs_z = np.abs(z)
+
+    max_channel = max(np.mean(abs_x), np.mean(abs_y), np.mean(abs_z))
+    
