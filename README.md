@@ -1,3 +1,4 @@
 # Gesture_Recognition
-For now, you just have to launch the "main.py" program, 
-the csvUtils.py and graphUtils.py are just program contening functions.
+For now, you just have to launch the "main.py" program.
+Replace the path from "seq_to_read" and "seq_to_labelise" by the
+path of your sequence !

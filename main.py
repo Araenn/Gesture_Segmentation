@@ -1,12 +1,11 @@
 import readingsUtils.csv_reading.csvUtils as CSV
-import numpy as np
 import signalUtils as SIGNAL
 
 if __name__ == "__main__":
 
         #seq_to_read = "data/our_datas/non_gesture/Non-gesture_8_Lea.csv"
-        seq_to_read = "data/our_datas/gestures/processed/seq1.csv"
-        seq_to_labelise = "data/our_datas/gestures/raw/seq1.csv"
+        seq_to_read = "data/our_datas/gestures/processed/last.csv"
+        seq_to_labelise = "data/our_datas/gestures/raw/last.csv"
         normalised_timestamp_acc, x_gyros, y_gyros, z_gyros, x_accel, y_accel, z_accel, fs = CSV.reading_into_csv(
                 seq_to_read)
 
@@ -24,9 +23,9 @@ if __name__ == "__main__":
         #seq3 : sigma = 11, threshold = 0.3
         #seq2 : sigma = 50, threshold = 0.21
         #seq1 : sigma = 50, threshold = 0.2
-        threshold_multiplier = 0.1 # if too low (<0.4), detection check shows ungesture instead of gesture, if too high, gesture are too much segmented
+        threshold_multiplier = 0.1 # if low (<0.2), detection is very harsh, else, detection is more smooth (overlapping gestures)
 
-        sigma = 50
+        sigma = 0.001
 
 
         # SEGMENTATION
