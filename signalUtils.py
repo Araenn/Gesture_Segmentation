@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def all_calculations(x_accel, y_accel, z_accel, timestamp, sigma, threshold_multiplier, true_mvmt, fs):
-    # Normalise the acceleration data
 
     xaccel_derivative, xaccel_gaussian, abs_xaccel, start_xaccel, end_xaccel = MATH.simple_segmentation(
             timestamp, x_accel, sigma, threshold_multiplier)
@@ -88,5 +87,15 @@ def channels_stats(x, y, z):
     abs_y = np.abs(y)
     abs_z = np.abs(z)
 
-    max_channel = max(np.mean(abs_x), np.mean(abs_y), np.mean(abs_z))
+    x_average = np.mean(abs_x)
+    y_average = np.mean(abs_y)
+    z_average = np.mean(abs_z)
+    max_channel = max(x_average, y_average, z_average)
+
+    if max_channel == x_average:
+        return "x"
+    elif max_channel == y_average:
+        return "y"
+    else:
+        return "y"
     

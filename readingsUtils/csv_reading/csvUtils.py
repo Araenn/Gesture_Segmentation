@@ -19,13 +19,13 @@ def reading_into_csv(path):
             timestamp_subject01_gesture09.append(row[0])
             normalised_timestamp.append(float(timestamp_subject01_gesture09[line_count]) - float(timestamp_subject01_gesture09[0]))
             
-            x_accel.append(float(row[1]))
-            y_accel.append(float(row[2]))
-            z_accel.append(float(row[3]))
+            x_accel.append(float(row[4]))
+            y_accel.append(float(row[5]))
+            z_accel.append(float(row[6]))
 
-            x_gyros.append(float(row[4]))
-            y_gyros.append(float(row[5]))
-            z_gyros.append(float(row[6]))
+            x_gyros.append(float(row[1]))
+            y_gyros.append(float(row[2]))
+            z_gyros.append(float(row[3]))
         
             line_count += 1
 

@@ -17,7 +17,7 @@ if __name__ == "__main__":
         #seq3 : sigma = 11, threshold = 0.3, v right left
         threshold_multiplier = 0.1 # if too low (<0.4), detection check shows ungesture instead of gesture, if too high, gesture are too much segmented
 
-        sigma = 20
+        sigma = 10
 
 
         # SEGMENTATION
@@ -26,6 +26,6 @@ if __name__ == "__main__":
         start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel = SIGNAL.all_calculations(
                 x_accel, y_accel, z_accel,
                 normalised_timestamp_acc, sigma, threshold_multiplier, true_mvmt, fs)
-
-        SIGNAL.channels_stats(x_accel, y_accel, z_accel)
         
+        higher_channel = SIGNAL.channels_stats(x_accel, y_accel, z_accel)
+        print(higher_channel)

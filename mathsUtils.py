@@ -17,9 +17,10 @@ def derivative(normalised_timestamp_acc, x_accel):
 
 
 def simple_segmentation(timestamp, signal, sigma, threshold_multiplier):
-    # Derivate the normalised data
+    # WARNING, MAYBE NOT DERIVATING
     signal_derivative = derivative(timestamp, signal)
-    signal_derivative = derivative(timestamp, signal_derivative)
+    #signal_derivative = derivative(timestamp, signal_derivative)
+    signal_derivative = signal
 
     # Filtering with Gaussian filter the derivated data
     norm_gaussian = gaussian_filter1d(signal_derivative, sigma)
@@ -76,7 +77,7 @@ def non_max_suppression(seg_start_list, seg_end_list, threshold):
     selected_indices_start = []
     selected_indices_end = []
     n = len(seg_start_list)
-
+    
     i = 0
     while i < n - 1:
         end_i = seg_end_list[i]
@@ -92,12 +93,14 @@ def non_max_suppression(seg_start_list, seg_end_list, threshold):
         i = j + 1
     """
     for i in range(1, len(seg_start_list)):
-        diff_start = seg_end_list[i - 1] - seg_start_list[i]
+        diff_start = abs(seg_end_list[i - 1] - seg_start_list[i])
         if diff_start <= threshold:
             selected_indices_start.append(min(seg_start_list[i - 1], seg_start_list[i]))
             selected_indices_end.append(max(seg_end_list[i - 1], seg_end_list[i]))
-    """
-            
+        else:
+            selected_indices_start.append(seg_start_list[i])
+            selected_indices_end.append(seg_end_list[i])
+     """       
     return selected_indices_start, selected_indices_end
 
 def normalize_data(data):
