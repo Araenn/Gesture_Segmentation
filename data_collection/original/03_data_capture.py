@@ -96,7 +96,7 @@ if __name__ == "__main__":
 				print('recording %02d' % (G))
 				G=G+1 
 			if (k==82 or k==85) and status==1:
-				status=0			
+				status=1			
 				file.write('-1,-1,-1,-1,-1,-1,-1,-1\n')
 				k=-1
 				print('pause')	

@@ -111,9 +111,21 @@ def plots_rectangles(timestamp, y_signals: List[Tuple[List[float],str]], segment
 
 def plot_checking(timestamp, y_signals, seg_start, seg_end, true_mvmt, fs, name):
     _, axs = plt.subplots(len(y_signals))
-    
+    true_start = true_mvmt[0]
+    true_end = true_mvmt[1]
+
+    for i, (y_signal) in enumerate(y_signals):
+        for start, end in zip(true_start, true_end):
+            start_sample = floor(start * fs)
+            end_sample = ceil(end * fs)
+            
+            norm_gaussian_part = y_signal[0][start_sample:end_sample]
+            min_y = min(norm_gaussian_part)
+            max_y = max(norm_gaussian_part)
+            true_rect = Rectangle((start, min_y), end - start, max_y - min_y, alpha = 0.5, color="grey")
+            axs[i].add_patch(true_rect)
+
     for i, (y_signal, start_indices, end_indices) in enumerate(zip(y_signals, seg_start, seg_end)):
-        zeros = [max(y_signals[0][0])] * len(true_mvmt)
         axs[i].plot(timestamp, y_signals[i][0], label=y_signals[i][1])
         for start, end in zip(start_indices, end_indices):
             start_sample = floor(start * fs)
@@ -122,11 +134,8 @@ def plot_checking(timestamp, y_signals, seg_start, seg_end, true_mvmt, fs, name)
             norm_gaussian_part = y_signal[0][start_sample:end_sample]
             min_y = min(norm_gaussian_part)
             max_y = max(norm_gaussian_part)
-            rect = Rectangle((start, min_y), end - start, max_y - min_y, fill=False, edgecolor="red", linewidth=3)
+            rect = Rectangle((start, min_y), end - start, max_y - min_y, fill=False, edgecolor="red", linewidth=2)
             axs[i].add_patch(rect)
-
-        axs[i].stem(true_mvmt, zeros, linefmt="black", markerfmt='none', label="true")
-
         axs[i].legend()
 
     plt.suptitle(f"Segmentation {name} check with true data")

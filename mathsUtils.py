@@ -103,9 +103,29 @@ def non_max_suppression(seg_start_list, seg_end_list, threshold):
      """       
     return selected_indices_start, selected_indices_end
 
-def normalize_data(data):
-    min_val = min(data)
-    max_val = max(data)
-    normalized_data = [(x - min_val) / (max_val - min_val) for x in data]
-    normalized_scaled_data = [2 * x - 1 for x in normalized_data]
-    return normalized_scaled_data
+def IOU(start_true, end_true, start_detected, end_detected):
+    Xa = max(start_true, start_detected)
+    Xb = min(end_true, end_detected)
+    inter = max(0, Xb - Xa)
+    union = max(end_true, end_detected) - min(start_true, start_detected)
+    res = inter / union
+    return res
+
+def true_false_positive_negative(iou:float, is_gesture:bool):
+    threshold = 0.5
+
+    true_positiv = 0
+    false_positiv = 0
+    true_negativ = 0
+    false_negativ = 0
+    
+    if iou > threshold and is_gesture:
+        true_positiv += 1
+    elif iou > threshold and not is_gesture:
+        false_positiv += 1
+    elif iou < threshold and is_gesture:
+        false_negativ += 1
+    elif iou > threshold and not is_gesture:
+        true_negativ += 1
+
+    return true_positiv, true_negativ, false_positiv, false_negativ

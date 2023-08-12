@@ -80,7 +80,7 @@ def all_calculations(x_accel, y_accel, z_accel, timestamp, sigma, threshold_mult
 
     print(f"new rectangles : {len(new_start_norm)}")
     
-    return start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel
+    return start_xaccel, end_xaccel, start_yaccel, end_yaccel, start_zaccel, end_zaccel, markers_begin, markers_end
 
 def channels_stats(x, y, z):
     abs_x = np.abs(x)

@@ -131,7 +131,6 @@ def rectangle_extraction(x_coordinates, y_coordinates, z_coordinates, x_accel, y
             ax.add_patch(rect)
     plt.legend()
     plt.title(f"Merged rectangle for {type} with x, y and z channels")
-    plt.savefig(f"./images_saved/results/Merged_rectangles_{type}.png")
     plt.show()
 
     print(f"merged rectangles : {rectangleAMount}")

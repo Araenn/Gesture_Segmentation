@@ -6,12 +6,12 @@ import signalUtils as SIGNAL
 if __name__ == "__main__":
 
         normalised_timestamp_acc, x_gyros, y_gyros, z_gyros, x_accel, y_accel, z_accel = CSV.reading_into_csv(
-                "data/our_datas/non_gesture/Non-gesture_8_Lea.csv")
+                "our_datas/non_gesture/Non-gesture_8_Lea.csv")
 
         # PARAMETERS FOR THE REST OF THE CODE
-        window_size = 5  # Size of the moving window for computing mean and standard deviation
+        window_size = 10  # Size of the moving window for computing mean and standard deviation
         envelopp_multiplier = 3  # Multiplier for the standard deviation to determine the envelopp
-        threshold_multiplier = 0.9 # if too low (<0.4), detection check shows ungesture instead of gesture, if too high, gesture are too much segmented
+        threshold_multiplier = 0.8 # if too low (<0.4), detection check shows ungesture instead of gesture, if too high, gesture are too much segmented
 
         sigma = 0.1
 

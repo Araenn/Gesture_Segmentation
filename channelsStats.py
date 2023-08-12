@@ -28,4 +28,4 @@ if __name__ == "__main__":
                 normalised_timestamp_acc, sigma, threshold_multiplier, true_mvmt, fs)
         
         higher_channel = SIGNAL.channels_stats(x_accel, y_accel, z_accel)
-        print(higher_channel)
+        print(f"higher chan is : {higher_channel}")
