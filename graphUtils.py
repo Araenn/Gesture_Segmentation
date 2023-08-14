@@ -109,7 +109,7 @@ def plots_rectangles(timestamp, y_signals: List[Tuple[List[float],str]], segment
         plt.show()
 
 
-def plot_checking(timestamp, y_signals, seg_start, seg_end, true_mvmt, fs, name):
+def plot_checking(timestamp, y_signals, seg_start, seg_end, true_mvmt, fs, name, choice):
     _, axs = plt.subplots(len(y_signals))
     true_start = true_mvmt[0]
     true_end = true_mvmt[1]
@@ -138,8 +138,8 @@ def plot_checking(timestamp, y_signals, seg_start, seg_end, true_mvmt, fs, name)
             axs[i].add_patch(rect)
         axs[i].legend()
 
-    plt.suptitle(f"Segmentation {name} check with true data")
-    plt.savefig(f"./images_saved/results/Labelised_{name}.png")
+    plt.suptitle(f"Segmentation {name} for {choice} check with true data")
+    plt.savefig(f"./images_saved/results/Labelised_{name}_{choice}.png")
     plt.show()
 
 
