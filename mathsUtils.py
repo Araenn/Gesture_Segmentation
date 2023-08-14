@@ -76,32 +76,20 @@ def find_bounds(x, signal, threshold):
 def non_max_suppression(seg_start_list, seg_end_list, threshold):
     selected_indices_start = []
     selected_indices_end = []
-    n = len(seg_start_list)
     
-    i = 0
-    while i < n - 1:
-        end_i = seg_end_list[i]
-        j = i + 1
-        while j < n - 1:
-            if ((threshold > 0 and -end_i + seg_start_list[j] < threshold)
-                or (threshold <= 0 and end_i - seg_start_list[j] > threshold)):
-                j += 1
-            else:
-                break
-        selected_indices_start.append(seg_start_list[i])
-        selected_indices_end.append(seg_end_list[j])
-        i = j + 1
-    """
+    selected_indices_start.append(seg_start_list[0])
+    selected_indices_end.append(seg_end_list[0])
+    
     for i in range(1, len(seg_start_list)):
         diff_start = abs(seg_end_list[i - 1] - seg_start_list[i])
         if diff_start <= threshold:
-            selected_indices_start.append(min(seg_start_list[i - 1], seg_start_list[i]))
-            selected_indices_end.append(max(seg_end_list[i - 1], seg_end_list[i]))
+            selected_indices_end[-1] = max(seg_end_list[i], selected_indices_end[-1])
         else:
             selected_indices_start.append(seg_start_list[i])
             selected_indices_end.append(seg_end_list[i])
-     """       
+           
     return selected_indices_start, selected_indices_end
+
 
 def IOU(start_true, end_true, start_detected, end_detected):
     Xa = max(start_true, start_detected)
@@ -129,3 +117,6 @@ def true_false_positive_negative(iou:float, is_gesture:bool):
         true_negativ += 1
 
     return true_positiv, true_negativ, false_positiv, false_negativ
+
+def mean(data):
+    return sum(data)/len(data)

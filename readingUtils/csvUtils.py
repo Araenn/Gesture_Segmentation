@@ -31,7 +31,6 @@ def reading_into_csv(path):
 
         diff_timestamps = (normalised_timestamp[-1] - normalised_timestamp[0]) / len(normalised_timestamp)
         fs = 1 / diff_timestamps
-        print(fs)
 
     return normalised_timestamp, x_accel, y_accel, z_accel, x_gyros, y_gyros, z_gyros, fs
 

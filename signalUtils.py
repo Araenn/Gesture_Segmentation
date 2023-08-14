@@ -63,7 +63,7 @@ def all_calculations(x_accel, y_accel, z_accel, timestamp, sigma, threshold_mult
                         [end_xaccel, end_yaccel, end_zaccel, markers_end],
                         true_mvmt, fs, "raw")
     
-    iou_threshold = 0
+    iou_threshold = 2
 
     new_start_norm, new_end_norm = MATH.non_max_suppression(markers_begin, markers_end, iou_threshold)
     new_start_x, new_end_x = MATH.non_max_suppression(start_xaccel, end_xaccel, iou_threshold)
