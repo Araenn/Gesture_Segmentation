@@ -5,15 +5,22 @@ import mathsUtils as MATH
 if __name__ == "__main__":
 
         #seq_to_read = "data/our_datas/non_gesture/Non-gesture_8_Lea.csv"
-        seq_to_read = "data/our_datas/new/processed/seq13.csv"
-        seq_to_labelise = "data/our_datas/new/raw/seq13.csv"
+        seq_to_read = "data/our_datas/new/processed/seq3.csv"
+        seq_to_labelise = "data/our_datas/new/raw/seq3.csv"
 
         normalised_timestamp_acc, x_accel, y_accel, z_accel, x_gyros, y_gyros, z_gyros, fs = CSV.reading_into_csv(
                 seq_to_read)
 
 
         # PARAMETERS FOR THE REST OF THE CODE
-        # for new seq 13, threshold = 13 and sigma = 10. For IOU, threshold = 2
+        # for new seq 13, threshold = 0.3 and sigma = 10. For IOU, threshold = 2
+        # for new seq 12, threshold = 0.5 and sigma = 10. For IOU, threshold = 2
+        # for new seq 11, threshold = 0.3 and sigma = 10. For IOU, threshold = 2
+        # for new seq 10, threshold = 0.3 and sigma = 10. For IOU, threshold = 2
+        # for new seq 9, threshold = 0.3 and sigma = 10. For IOU, threshold = 2
+        # for new seq 8, threshold = 0.3 and sigma = 10. For IOU, threshold = 2
+        # for new seq 7, threshold = 0.3 and sigma = 10. For IOU, threshold = 2
+        # same for the rest
         threshold_multiplier = 0.3 # if low (<0.2), detection is very harsh, else, detection is more smooth (overlapping gestures)
 
         sigma = 10

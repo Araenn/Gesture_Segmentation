@@ -40,7 +40,18 @@ def labelise_data(path):
     true_end = []
 
     starting_timestamp = float(2 * normalised_timestamp[1] - normalised_timestamp[2])
-    true_start.append(0)
+    
+    number_zeros = 0
+    number_minusone = 0
+    for i in range(0, len(normalised_timestamp)):
+        if x_accel[i] == 0 and y_accel[i] == 0 and z_accel[i] == 0 and x_gyros[i] == 0 and y_gyros[i] == 0 and z_gyros[i] == 0:
+            number_zeros += 1
+        elif x_accel[i] == -1 and y_accel[i] == -1 and z_accel[i] == -1 and x_gyros[i] == -1 and y_gyros[i] == -1 and z_gyros[i] == -1:
+            number_minusone += 1
+
+    if number_zeros == number_minusone:
+        true_start.append(0)
+
     for i in range(1, len(normalised_timestamp)):
         if normalised_timestamp[i] == 0:
             true_start.append(((normalised_timestamp[i + 1] + normalised_timestamp[i - 2]) / 2) - starting_timestamp)
