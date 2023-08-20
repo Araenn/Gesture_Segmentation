@@ -58,5 +58,11 @@ def labelise_data(path):
         if normalised_timestamp[i] == -1:
             true_end.append(((normalised_timestamp[i + 1] + normalised_timestamp[i - 2]) / 2) - starting_timestamp)
 
-    true_end.append(((normalised_timestamp[-1] + normalised_timestamp[-2]) / 2) - starting_timestamp)
+    #true_end.append(((normalised_timestamp[-1] + normalised_timestamp[-2]) / 2) - starting_timestamp)
     return [true_start, true_end]
+
+def write_to_csv(values, filename):
+    with open(filename, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        for value in values:
+            csv_writer.writerow([value])

@@ -115,15 +115,15 @@ def all_calculations(signal, timestamp, sigma, threshold_multiplier, true_mvmt, 
                             [start_xaccel, start_yaccel, start_zaccel, markers_begin],
                             [end_xaccel, end_yaccel, end_zaccel, markers_end], fs,
                             False)
+    
     """
-
     GRAPH.plot_checking(timestamp,
                         [ (xaccel_gaussian, "x"), (yaccel_gaussian, "y"), (zaccel_gaussian, "z"), (norm_gaussian, "norm") ],
                         [start_xaccel, start_yaccel, start_zaccel, markers_begin],
                         [end_xaccel, end_yaccel, end_zaccel, markers_end],
                         true_mvmt, fs, "raw", name)
     
-    iou_threshold = 2
+    iou_threshold = 1
 
     new_start_norm, new_end_norm = MATH.non_max_suppression(markers_begin, markers_end, iou_threshold)
     new_start_x, new_end_x = MATH.non_max_suppression(start_xaccel, end_xaccel, iou_threshold)
