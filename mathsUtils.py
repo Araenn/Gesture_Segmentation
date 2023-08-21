@@ -3,6 +3,14 @@ from typing import List, Tuple
 from math import sqrt, pow
 import readingUtils.csvUtils as CSV
 import graphUtils as GRAPH
+from enum import Enum, auto
+
+class DetectionType(Enum):
+    NONE = auto()
+    TRUE_POS = auto()
+    TRUE_NEG = auto()
+    FALSE_POS = auto()
+    FALSE_NEG = auto()
 
 
 def derivative(normalised_timestamp_acc, x_accel):
@@ -20,9 +28,6 @@ def derivative(normalised_timestamp_acc, x_accel):
 
 
 def simple_segmentation(timestamp, signal, sigma, threshold_multiplier):
-    # WARNING, MAYBE NOT DERIVATING
-    signal_derivative = derivative(timestamp, signal)
-    #signal_derivative = derivative(timestamp, signal_derivative)
     signal_derivative = signal
 
     # Filtering with Gaussian filter the derivated data
@@ -98,15 +103,6 @@ def is_supperposed(start_a:float, end_a:float, start_b:float, end_b:float) -> bo
     Xb = min(end_a, end_b)
     return Xb - Xa > 0
 
-from enum import Enum, auto
-
-class DetectionType(Enum):
-    NONE = auto()
-    TRUE_POS = auto()
-    TRUE_NEG = auto()
-    FALSE_POS = auto()
-    FALSE_NEG = auto()
-
 def determine_detection(reals_start, dets_start, reals_end, dets_end) -> Tuple[List[Tuple[DetectionType, int]]]:
     assert len(reals_start) == len(reals_end)
     assert len(dets_start) == len(dets_end)
@@ -159,7 +155,8 @@ def precision_recall(reals_start, dets_start, reals_end, dets_end):
             FP += 1
 
     precision = TP / (TP + FP)
-    return precision
+    recall = TP / (TP + FN)
+    return precision, recall
 
 def IOU(start_true, end_true, start_detected, end_detected):
     Xa = max(start_true, start_detected)

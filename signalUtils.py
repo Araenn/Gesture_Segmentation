@@ -1,7 +1,5 @@
 import graphUtils as GRAPH
 import mathsUtils as MATH
-import matplotlib.pyplot as plt
-import numpy as np
 
 def all_calculations(signal, timestamp, sigma, threshold_multiplier, true_mvmt, fs, choice):
     x_accel = signal[0]
